@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Ungio",
-    "slug": "ungio-kdh5czrzfhc0xvjdnnzj6",
+    "name": "keynan",
+    "slug": "keynan-",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,7 +24,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "6a6201ae-c492-41ec-bc57-4c64d6236f68"
+        "projectId": "b7f072c3-237b-4ba2-be59-08d8b346e9fa"
       }
     }
   }
