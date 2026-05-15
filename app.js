@@ -1,183 +1,236 @@
 import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, Text, View, ScrollView, TextInput, 
-  TouchableOpacity, Switch, FlatList, Alert 
+  TouchableOpacity, SafeAreaView, Switch, FlatList, Dimensions 
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const { width } = Dimensions.get('window');
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default function App() {
+  // --- STATE MANAGEMENT ---
   const [tasks, setTasks] = useState([]);
   const [goals, setGoals] = useState([]);
   const [notes, setNotes] = useState("");
-  const [theme, setTheme] = useState("light");
-  const [taskInput, setTaskInput] = useState("");
-  const [goalInput, setGoalInput] = useState("");
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [taskTitle, setTaskTitle] = useState("");
+  const [goalTitle, setGoalTitle] = useState("");
 
-  // 1. Loading Data (Marka app-ka la furo)
+  // --- DATA PERSISTENCE (AsyncStorage) ---
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
     try {
-      const savedTasks = await AsyncStorage.getItem("tasks");
-      const savedGoals = await AsyncStorage.getItem("goals");
-      const savedNotes = await AsyncStorage.getItem("notes");
-      const savedTheme = await AsyncStorage.getItem("theme");
+      const t = await AsyncStorage.getItem('tasks');
+      const g = await AsyncStorage.getItem('goals');
+      const n = await AsyncStorage.getItem('notes');
+      const theme = await AsyncStorage.getItem('theme');
 
-      if (savedTasks) setTasks(JSON.parse(savedTasks));
-      if (savedGoals) setGoals(JSON.parse(savedGoals));
-      if (savedNotes) setNotes(savedNotes);
-      if (savedTheme) setTheme(savedTheme);
-    } catch (e) { console.error("Error loading data", e); }
+      if (t) setTasks(JSON.parse(t));
+      if (g) setGoals(JSON.parse(g));
+      if (n) setNotes(n);
+      if (theme) setIsDarkMode(theme === 'dark');
+    } catch (e) { console.error(e); }
   };
 
-  // 2. Saving Data
-  const saveData = async (key, value) => {
+  const saveData = async (key, val) => {
     try {
-      await AsyncStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
-    } catch (e) { console.error("Error saving data", e); }
+      const valueToStore = typeof val === 'string' ? val : JSON.stringify(val);
+      await AsyncStorage.setItem(key, valueToStore);
+    } catch (e) { console.error(e); }
   };
 
-  // 3. Handlers
+  // --- LOGIC FUNCTIONS ---
   const addTask = () => {
-    if (!taskInput) return;
+    if (!taskTitle) return;
     const newTask = {
-      id: Math.random().toString(),
-      title: taskInput,
+      id: Date.now().toString(),
+      title: taskTitle,
       done: false,
       day: days[Math.floor(Math.random() * days.length)],
-      category: "General"
     };
-    const updatedTasks = [...tasks, newTask];
-    setTasks(updatedTasks);
-    saveData("tasks", updatedTasks);
-    setTaskInput("");
+    const newTasks = [...tasks, newTask];
+    setTasks(newTasks);
+    saveData('tasks', newTasks);
+    setTaskTitle("");
   };
 
   const addGoal = () => {
-    if (!goalInput) return;
-    const updatedGoals = [...goals, { id: Math.random().toString(), title: goalInput }];
-    setGoals(updatedGoals);
-    saveData("goals", updatedGoals);
-    setGoalInput("");
+    if (!goalTitle) return;
+    const newGoals = [...goals, { id: Date.now().toString(), title: goalTitle }];
+    setGoals(newGoals);
+    saveData('goals', newGoals);
+    setGoalTitle("");
   };
 
   const toggleTask = (id) => {
     const updated = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
     setTasks(updated);
-    saveData("tasks", updated);
+    saveData('tasks', updated);
   };
 
-  const isDarkMode = theme === "dark";
+  const completedCount = tasks.filter(t => t.done).length;
+  const progress = tasks.length ? Math.round((completedCount / tasks.length) * 100) : 0;
+
+  // --- UI RENDER ---
+  const themeStyles = isDarkMode ? darkTheme : lightTheme;
 
   return (
-    <ScrollView style={[styles.container, isDarkMode ? styles.darkBg : styles.lightBg]}>
-      {/* HEADER & THEME TOGGLE */}
-      <View style={styles.header}>
-        <Text style={[styles.mainTitle, isDarkMode ? styles.textWhite : styles.textBlack]}>Keynan Productivity</Text>
-        <Switch 
-          value={isDarkMode} 
-          onValueChange={() => {
-            const newTheme = isDarkMode ? "light" : "dark";
-            setTheme(newTheme);
-            saveData("theme", newTheme);
-          }} 
-        />
-      </View>
+    <SafeAreaView style={[styles.safeArea, themeStyles.bg]}>
+      <ScrollView stickyHeaderIndices={[0]} showsVerticalScrollIndicator={false}>
+        
+        {/* 1. TOPBAR */}
+        <View style={[styles.topbar, themeStyles.card]}>
+          <View style={styles.brand}>
+            <View style={styles.brandDot} />
+            <Text style={[styles.brandText, themeStyles.text]}>keynan</Text>
+          </View>
+          <Switch 
+            value={isDarkMode} 
+            onValueChange={(val) => {
+              setIsDarkMode(val);
+              saveData('theme', val ? 'dark' : 'light');
+            }} 
+          />
+        </View>
 
-      {/* ANALYTICS CARD */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Analytics</Text>
-        <Text>{tasks.filter(t => t.done).length} / {tasks.length} tasks completed</Text>
-      </View>
+        <View style={styles.content}>
+          {/* 2. HERO / ANALYTICS */}
+          <View style={[styles.heroCard, themeStyles.card]}>
+            <Text style={styles.eyebrow}>Today</Text>
+            <Text style={[styles.h2, themeStyles.text]}>Design your best day.</Text>
+            <View style={styles.statsRow}>
+              <View style={styles.stat}><Text style={[styles.statNum, themeStyles.text]}>{completedCount}</Text><Text style={styles.statLabel}>Done</Text></View>
+              <View style={styles.stat}><Text style={[styles.statNum, themeStyles.text]}>3</Text><Text style={styles.statLabel}>Streak</Text></View>
+              <View style={styles.stat}><Text style={[styles.statNum, themeStyles.text]}>{progress}%</Text><Text style={styles.statLabel}>Progress</Text></View>
+            </View>
+          </View>
 
-      {/* CALENDAR (Simple Grid) */}
-      <Text style={[styles.sectionTitle, isDarkMode ? styles.textWhite : styles.textBlack]}>Calendar</Text>
-      <View style={styles.calendarGrid}>
-        {[...Array(31)].map((_, i) => (
-          <View key={i} style={styles.calendarCell}><Text style={styles.cellText}>{i + 1}</Text></View>
-        ))}
-      </View>
-
-      {/* WEEK BOARD */}
-      <Text style={[styles.sectionTitle, isDarkMode ? styles.textWhite : styles.textBlack]}>Week Board</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {days.map(day => (
-          <View key={day} style={styles.dayCol}>
-            <Text style={styles.dayHeader}>{day}</Text>
-            {tasks.filter(t => t.day === day).map(t => (
-              <View key={t.id} style={styles.miniTask}><Text size={10}>{t.title}</Text></View>
+          {/* 3. DAILY TASKS */}
+          <View style={[styles.sectionCard, themeStyles.card]}>
+            <Text style={[styles.h3, themeStyles.text]}>Daily Tasks</Text>
+            <View style={styles.inputRow}>
+              <TextInput 
+                style={[styles.input, themeStyles.text]} 
+                placeholder="New task..." 
+                placeholderTextColor="#999"
+                value={taskTitle}
+                onChangeText={setTaskTitle}
+              />
+              <TouchableOpacity style={styles.addBtn} onPress={addTask}>
+                <Text style={{color:'#fff', fontWeight:'bold'}}>Add</Text>
+              </TouchableOpacity>
+            </View>
+            {tasks.map(t => (
+              <TouchableOpacity key={t.id} style={styles.taskItem} onPress={() => toggleTask(t.id)}>
+                <View style={[styles.checkbox, t.done && styles.checked]} />
+                <Text style={[themeStyles.text, t.done && styles.strike]}>{t.title}</Text>
+              </TouchableOpacity>
             ))}
           </View>
-        ))}
+
+          {/* 4. WEEKLY BOARD (Horizontal Scroll) */}
+          <Text style={[styles.sectionTitle, themeStyles.text]}>Weekly Planning</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: 20}}>
+            {days.map(day => (
+              <View key={day} style={[styles.dayColumn, themeStyles.card]}>
+                <Text style={[styles.dayName, themeStyles.text]}>{day}</Text>
+                {tasks.filter(t => t.day === day).map(t => (
+                  <View key={t.id} style={styles.miniTask}><Text style={{fontSize:11}} numberOfLines={1}>{t.title}</Text></View>
+                ))}
+              </View>
+            ))}
+          </ScrollView>
+
+          {/* 5. CALENDAR GRID */}
+          <View style={[styles.sectionCard, themeStyles.card]}>
+            <Text style={[styles.h3, themeStyles.text]}>Calendar</Text>
+            <View style={styles.calendar}>
+              {[...Array(31)].map((_, i) => (
+                <View key={i} style={styles.calCell}><Text style={{fontSize:10}}>{i+1}</Text></View>
+              ))}
+            </View>
+          </View>
+
+          {/* 6. GOALS & NOTES */}
+          <View style={styles.grid2}>
+            <View style={[styles.sectionCard, themeStyles.card, {flex:1}]}>
+              <Text style={[styles.h3, themeStyles.text]}>Goals</Text>
+              <TextInput 
+                style={[styles.input, themeStyles.text]} 
+                placeholder="Add Goal" 
+                value={goalTitle}
+                onChangeText={setGoalTitle}
+                onSubmitEditing={addGoal}
+              />
+              {goals.map(g => <Text key={g.id} style={[themeStyles.text, {marginTop:5}]}>• {g.title}</Text>)}
+            </View>
+            
+            <View style={[styles.sectionCard, themeStyles.card, {flex:1, marginLeft:10}]}>
+              <Text style={[styles.h3, themeStyles.text]}>Notes</Text>
+              <TextInput 
+                multiline 
+                style={[styles.notesInput, themeStyles.text]} 
+                placeholder="Ideas..." 
+                value={notes}
+                onChangeText={(txt) => { setNotes(txt); saveData('notes', txt); }}
+              />
+            </View>
+          </View>
+
+        </View>
+        <View style={{height: 100}} />
       </ScrollView>
-
-      {/* TASK INPUT */}
-      <View style={styles.inputSection}>
-        <TextInput 
-          style={[styles.input, isDarkMode && styles.inputDark]} 
-          placeholder="Enter new task..."
-          placeholderTextColor={isDarkMode ? "#ccc" : "#999"}
-          value={taskInput}
-          onChangeText={setTaskInput}
-        />
-        <TouchableOpacity style={styles.btn} onPress={addTask}><Text style={styles.btnText}>Add Task</Text></TouchableOpacity>
-      </View>
-
-      {/* GOALS SECTION */}
-      <Text style={[styles.sectionTitle, isDarkMode ? styles.textWhite : styles.textBlack]}>Long-term Goals</Text>
-      {goals.map(g => (
-        <View key={g.id} style={styles.listItem}><Text>• {g.title}</Text></View>
-      ))}
-      <TextInput 
-        style={[styles.input, isDarkMode && styles.inputDark]} 
-        placeholder="New Goal..."
-        value={goalInput}
-        onChangeText={setGoalInput}
-        onSubmitEditing={addGoal}
-      />
-
-      {/* NOTES SECTION */}
-      <Text style={[styles.sectionTitle, isDarkMode ? styles.textWhite : styles.textBlack]}>Daily Notes</Text>
-      <TextInput 
-        multiline
-        numberOfLines={4}
-        style={[styles.notesArea, isDarkMode && styles.inputDark]}
-        value={notes}
-        onChangeText={(text) => { setNotes(text); saveData("notes", text); }}
-      />
-      
-      <View style={{ height: 50 }} />
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 
+// --- STYLES ---
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, paddingTop: 50 },
-  darkBg: { backgroundColor: '#1a1a1a' },
-  lightBg: { backgroundColor: '#f5f5f5' },
-  textWhite: { color: '#fff' },
-  textBlack: { color: '#000' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-  mainTitle: { fontSize: 22, fontWeight: 'bold' },
-  card: { backgroundColor: '#fff', padding: 15, borderRadius: 10, elevation: 3, marginBottom: 20 },
-  cardTitle: { fontWeight: 'bold', marginBottom: 5 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', marginTop: 20, marginBottom: 10 },
-  calendarGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' },
-  calendarCell: { width: 40, height: 40, backgroundColor: '#ddd', margin: 2, justifyContent: 'center', alignItems: 'center', borderRadius: 5 },
-  cellText: { fontSize: 12 },
-  dayCol: { width: 100, backgroundColor: '#e0e0e0', marginRight: 10, borderRadius: 8, padding: 5, minHeight: 100 },
-  dayHeader: { fontWeight: 'bold', textAlign: 'center', marginBottom: 5 },
-  miniTask: { backgroundColor: '#fff', padding: 4, borderRadius: 4, marginBottom: 4 },
-  inputSection: { marginTop: 20 },
-  input: { backgroundColor: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#ddd', marginBottom: 10 },
-  inputDark: { backgroundColor: '#333', color: '#fff', borderColor: '#444' },
-  btn: { backgroundColor: '#007AFF', padding: 15, borderRadius: 8, alignItems: 'center' },
-  btnText: { color: '#fff', fontWeight: 'bold' },
-  listItem: { padding: 10, backgroundColor: '#fff', marginBottom: 5, borderRadius: 5 },
-  notesArea: { backgroundColor: '#fff', padding: 15, borderRadius: 8, textAlignVertical: 'top', minHeight: 100 }
+  safeArea: { flex: 1 },
+  topbar: { flexDirection: 'row', justifyContent: 'space-between', padding: 20, alignItems: 'center', borderBottomWidth: 0.5, borderColor: '#eee' },
+  brand: { flexDirection: 'row', alignItems: 'center' },
+  brandDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#007AFF', marginRight: 6 },
+  brandText: { fontSize: 18, fontWeight: '800' },
+  content: { padding: 15 },
+  heroCard: { padding: 20, borderRadius: 15, marginBottom: 15 },
+  eyebrow: { color: '#007AFF', fontWeight: 'bold', fontSize: 12, marginBottom: 5 },
+  h2: { fontSize: 24, fontWeight: '800', marginBottom: 15 },
+  statsRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  stat: { alignItems: 'center' },
+  statNum: { fontSize: 20, fontWeight: 'bold' },
+  statLabel: { fontSize: 10, color: '#888', marginTop: 2 },
+  sectionCard: { padding: 15, borderRadius: 12, marginBottom: 15 },
+  h3: { fontSize: 16, fontWeight: '700', marginBottom: 12 },
+  inputRow: { flexDirection: 'row', marginBottom: 15 },
+  input: { flex: 1, borderBottomWidth: 1, borderColor: '#ddd', padding: 8 },
+  addBtn: { backgroundColor: '#000', padding: 10, borderRadius: 8, marginLeft: 10 },
+  taskItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+  checkbox: { width: 18, height: 18, borderRadius: 4, borderWidth: 1, borderColor: '#007AFF', marginRight: 10 },
+  checked: { backgroundColor: '#007AFF' },
+  strike: { textDecorationLine: 'line-through', color: '#aaa' },
+  sectionTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 10 },
+  dayColumn: { width: 100, padding: 10, borderRadius: 10, marginRight: 10, minHeight: 120 },
+  dayName: { fontWeight: 'bold', textAlign: 'center', marginBottom: 8 },
+  miniTask: { backgroundColor: '#f0f0f0', padding: 4, borderRadius: 4, marginBottom: 4 },
+  calendar: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' },
+  calCell: { width: 30, height: 30, backgroundColor: '#eee', margin: 2, alignItems: 'center', justifyContent: 'center', borderRadius: 4 },
+  grid2: { flexDirection: 'row' },
+  notesInput: { fontSize: 12, textAlignVertical: 'top', minHeight: 60 }
 });
-    
+
+const lightTheme = {
+  bg: { backgroundColor: '#f9f9f9' },
+  card: { backgroundColor: '#ffffff' },
+  text: { color: '#000000' }
+};
+
+const darkTheme = {
+  bg: { backgroundColor: '#121212' },
+  card: { backgroundColor: '#1e1e1e' },
+  text: { color: '#ffffff' }
+};
+                              
