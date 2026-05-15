@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "Ungio",
+    "slug": "ungio-kdh5czrzfhc0xvjdnnzj6",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "com.abdallakeynan.ungio", 
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "permissions": [] 
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6a6201ae-c492-41ec-bc57-4c64d6236f68"
+      }
+    }
+  }
+}
