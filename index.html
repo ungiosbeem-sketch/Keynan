@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Keynan Planner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-dot"></span>
+          <h1>keynan</h1>
+        </div>
+        <div class="topbar-actions">
+          <button id="themeToggle" class="ghost-btn">🌗</button>
+          <button id="authBtn" class="primary-btn">Sign In</button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="card hero">
+          <div>
+            <p class="eyebrow">Today</p>
+            <h2>Design your best day.</h2>
+            <p>
+              Plan tasks, stay focused, and track your momentum with a premium,
+              minimal workspace.
+            </p>
+          </div>
+          <div class="stats-row">
+            <div class="stat">
+              <span id="tasksDone">0</span>
+              <small>Tasks done</small>
+            </div>
+            <div class="stat">
+              <span id="streak">3</span>
+              <small>Focus streak</small>
+            </div>
+            <div class="stat">
+              <span id="goalRate">0%</span>
+              <small>Goal progress</small>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid-2">
+          <article class="card">
+            <div class="section-head">
+              <h3>Daily Tasks</h3>
+              <select id="taskCategoryFilter" class="input">
+                <option value="all">All categories</option>
+              </select>
+            </div>
+            <form id="taskForm" class="inline-form">
+              <input id="taskInput" class="input" placeholder="Add a task..." required />
+              <select id="categoryInput" class="input">
+                <option>Work</option>
+                <option>Health</option>
+                <option>Learning</option>
+                <option>Personal</option>
+              </select>
+              <input id="reminderInput" class="input" type="time" />
+              <button class="primary-btn" type="submit">Add</button>
+            </form>
+            <ul id="taskList" class="task-list"></ul>
+          </article>
+
+          <article class="card">
+            <div class="section-head">
+              <h3>Weekly Planning (Drag & Drop)</h3>
+            </div>
+            <div id="weekBoard" class="week-board"></div>
+          </article>
+        </section>
+
+        <section class="grid-3">
+          <article class="card">
+            <h3>Calendar</h3>
+            <div id="calendar" class="calendar"></div>
+          </article>
+
+          <article class="card">
+            <h3>Goals Tracking</h3>
+            <form id="goalForm" class="inline-form">
+              <input id="goalInput" class="input" placeholder="New goal" required />
+              <button class="primary-btn" type="submit">Add</button>
+            </form>
+            <ul id="goalList" class="simple-list"></ul>
+          </article>
+
+          <article class="card">
+            <h3>Notes</h3>
+            <textarea id="notes" class="notes" placeholder="Capture ideas, reflections, and priorities..."></textarea>
+          </article>
+        </section>
+
+        <section class="card">
+          <h3>Motivational Dashboard</h3>
+          <div class="widgets">
+            <div class="widget">
+              <p>Quote of the day</p>
+              <strong>“Small progress is still progress.”</strong>
+            </div>
+            <div class="widget">
+              <p>Reminder</p>
+              <strong id="nextReminder">No reminders set</strong>
+            </div>
+            <div class="widget">
+              <p>Analytics</p>
+              <strong id="analyticsText">Start adding tasks to see trends.</strong>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
