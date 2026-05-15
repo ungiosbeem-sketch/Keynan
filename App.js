@@ -233,4 +233,4 @@ const darkTheme = {
   card: { backgroundColor: '#1e1e1e' },
   text: { color: '#ffffff' }
 };
-                              
+    
