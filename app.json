@@ -9,23 +9,49 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#050505"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ungio.premium",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app uses photos for task attachments"
+      }
+    },
     "android": {
-      "package": "com.abdallakeynan.ungio", 
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#000000"
+        "backgroundColor": "#FF4FA3"
       },
-      "permissions": [] 
+      "package": "com.ungio.premium",
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "b5e812bd-f8a8-40df-bcd8-71fd6ac4d8cb"
       }
-    }
+    },
+    "scheme": "ungioapp"
   }
 }
