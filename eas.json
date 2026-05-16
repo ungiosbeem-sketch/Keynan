@@ -1,16 +1,29 @@
 {
   "cli": {
-    "version": ">= 18.13.0"
+    "version": ">= 7.0.0"
   },
   "build": {
-    "base": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
       "android": {
         "buildType": "apk"
       }
     },
-    "production": {
+    "base": {
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "apk"
+      },
+      "env": {
+        "SUPABASE_URL": "https://bwmvrsasculzivdcqyvi.supabase.co",
+        "SUPABASE_ANON_KEY": "sb_publishable_jC1Yhl9CMcnATcBtTRvwmQ_dM2QRr-j"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "SUPABASE_URL": "https://bwmvrsasculzivdcqyvi.supabase.co",
+        "SUPABASE_ANON_KEY": "sb_publishable_jC1Yhl9CMcnATcBtTRvwmQ_dM2QRr-j"
       }
     }
   },
