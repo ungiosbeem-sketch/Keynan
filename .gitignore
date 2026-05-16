@@ -1,34 +1,11 @@
-# Dependencies
+# .gitignore
 node_modules/
 .expo/
-dist/
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# Native folders (Mar kasta oo aad build sameyso ayay abuurmaan)
+.expo-shared/
+.env
+*.local
+.DS_Store
+*.pem
 android/
 ios/
-
-# Expo builds and distribution
-.pnpm-debug.log*
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# EAS Build logs and metadata
-.eas/
-eas-build-pre-install.sh
-eas-build-post-install.sh
-
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# System files
-.DS_Store
-Thumbs.db
+dist/
