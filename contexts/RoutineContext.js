@@ -4,11 +4,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 
 const routineItems = [
-  { id: 'wake', title: '🌅 Wake Up', time: '06:00', icon: 'sunrise', completed: false },
-  { id: 'pray', title: '🕌 Morning Prayer', time: '06:30', icon: 'pray', completed: false },
-  { id: 'study', title: '📚 Study Session', time: '08:00', icon: 'book', completed: false },
-  { id: 'school', title: '🏫 Go to School', time: '09:00', icon: 'school', completed: false },
-  { id: 'lunch', title: '🍽️ Lunch Break', time: '12:00', icon: 'food', completed: false },
+  { id: 'wake', title: '🌅 Wake Up', time: '04:00', icon: 'sunrise', completed: false },
+  { id: 'pray', title: '🕌 Morning Prayer', time: '04:30', icon: 'pray', completed: false },
+  { id: 'study', title: '📚 Study Session', time: '06:00', icon: 'book', completed: false },
+  { id: 'school', title: '🏫 Go to School', time: '01:00', icon: 'school', completed: false },
+  { id: 'lunch', title: '🍽️ Lunch Break', time: '13:00', icon: 'food', completed: false },
   { id: 'homework', title: '✏️ Homework', time: '15:00', icon: 'edit', completed: false },
   { id: 'read', title: '📖 Reading', time: '18:00', icon: 'book-open', completed: false },
   { id: 'dinner', title: '🍲 Dinner', time: '19:30', icon: 'food', completed: false },
