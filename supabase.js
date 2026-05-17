@@ -692,3 +692,64 @@ export const unsubscribe = (subscription) => {
 
 // Export default
 export default supabase;
+// Ku dar supabase.js gudihiisa
+
+// ============ ROUTINE FUNCTIONS ============
+export const getRoutine = async (userId) => {
+  const { data, error } = await supabase
+    .from('routines')
+    .select('*')
+    .eq('user_id', userId)
+    .order('order', { ascending: true });
+  return { success: !error, routines: data || [] };
+};
+
+export const updateRoutineItem = async (routineId, completed) => {
+  const { error } = await supabase
+    .from('routines')
+    .update({ completed, updated_at: new Date().toISOString() })
+    .eq('id', routineId);
+  return { success: !error };
+};
+
+// ============ SCHOOL FUNCTIONS ============
+export const getSchedule = async (userId) => {
+  const { data, error } = await supabase
+    .from('schedule')
+    .select('*')
+    .eq('user_id', userId);
+  return { success: !error, schedule: data || [] };
+};
+
+export const addScheduleItem = async (item) => {
+  const { data, error } = await supabase.from('schedule').insert([item]).select();
+  return { success: !error, schedule: data?.[0] };
+};
+
+// ============ HOMEWORK FUNCTIONS ============
+export const getHomework = async (userId) => {
+  const { data, error } = await supabase
+    .from('homework')
+    .select('*')
+    .eq('user_id', userId);
+  return { success: !error, homework: data || [] };
+};
+
+export const addHomework = async (homework) => {
+  const { data, error } = await supabase.from('homework').insert([homework]).select();
+  return { success: !error, homework: data?.[0] };
+};
+
+// ============ BOOKS FUNCTIONS ============
+export const getBooks = async (userId) => {
+  const { data, error } = await supabase
+    .from('books')
+    .select('*')
+    .eq('user_id', userId);
+  return { success: !error, books: data || [] };
+};
+
+export const addBook = async (book) => {
+  const { data, error } = await supabase.from('books').insert([book]).select();
+  return { success: !error, book: data?.[0] };
+};
