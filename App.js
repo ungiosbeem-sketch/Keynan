@@ -1281,5 +1281,5 @@ const styles = StyleSheet.create({
   modalCancelText: { fontWeight: '500' },
 });
 
-// Helper for LinearGradient
-const LinearGradient = require('expo-linear-gradient').LinearGradient;
+// Helper for LinearGradient - REMOVED because already imported at top
+// const LinearGradient = require('expo-linear-gradient').LinearGradient;
